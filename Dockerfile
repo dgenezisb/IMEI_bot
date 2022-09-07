@@ -13,7 +13,7 @@ RUN dart pub get --offline
 
 # Pay attention to the next line! Write your file name after `bin/`!
 # For example: `RUN dart compile exe bin/your_file_name.dart ...`
-RUN dart compile exe bin/bot_medium.dart -o bin/server
+RUN dart compile exe bin/bot_t_2.dart -o bin/server
 
 # Build minimal serving image from AOT-compiled `/server` and required system
 # libraries and configuration files stored in `/runtime/` from the build stage.
