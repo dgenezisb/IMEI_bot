@@ -10,17 +10,13 @@ RUN dart pub get
 COPY . .
 # Ensure packages are still up-to-date if anything has changed
 RUN dart pub get --offline
-
-# Pay attention to the next line! Write your file name after `bin/`!
-# For example: `RUN dart compile exe bin/your_file_name.dart ...`
-RUN dart compile exe bin/bot_t_2.dart -o bin/server
+RUN dart compile exe bin/bot_t_2.dart -o bin/bot
 
 # Build minimal serving image from AOT-compiled `/server` and required system
 # libraries and configuration files stored in `/runtime/` from the build stage.
 FROM scratch
 COPY --from=build /runtime/ /
-COPY --from=build /app/bin/server /app/bin/
+COPY --from=build /app/bin/bot /app/bin/
 
 # Start server.
-EXPOSE 8080
-CMD ["/app/bin/server"]
+CMD ["/app/bin/bot"]
