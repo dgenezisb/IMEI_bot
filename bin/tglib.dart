@@ -38,6 +38,36 @@ String Finder(List<List> DBList, String inside) {
   return result;
 }
 
+String FinderV2(List<String> IMEIS, List<String> PHONES, String inside) {
+  String result = "Empty";
+  //var a = DBList[0];
+  int i = 0;
+  int iDubl = 0;
+  int check = 0;
+  int chCount = 0;
+  while (check != 1) {
+    while ((IMEIS[i].toString() != inside) && (i < 215206)) {
+      i++;
+    }
+    if (IMEIS[i].toString() == inside) {
+      check = 1;
+      iDubl = i;
+    }
+
+    inside = rezak(inside);
+    i = 0;
+    chCount++;
+    if (chCount > 25) {
+      result = "Слишком много попыток,бро\nПоробуй еще раз, мб ошибся где...";
+      break;
+    }
+  }
+  if ((iDubl < 215206) && (check == 1)) {
+    result = PHONES[iDubl];
+  }
+  return result;
+}
+
 String rezak(String inside) {
   if (inside.length != 0) {
     int l = inside.length - 1;
