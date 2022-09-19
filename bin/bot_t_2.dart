@@ -5,8 +5,8 @@ import 'tglib.dart';
 import 'DataBase.dart';
 
 void main() async {
-  var DB = File('tac_database_June2022.csv');
-  var listOfDb = csvToList(DB);
+  //var DB = File('tac_database_June2022.csv');
+  //var listOfDb = csvToList(DB);
   var response;
   var imeis = IMEIS();
   var phones = PHONES();
