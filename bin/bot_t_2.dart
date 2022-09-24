@@ -4,20 +4,25 @@ import 'dart:convert';
 import 'tglib.dart';
 import 'DataBase.dart';
 
+String upd = "";
+String updPr = "";
+var ifFirst = true;
 void main() async {
-  //var DB = File('tac_database_June2022.csv');
-  //var listOfDb = csvToList(DB);
+  var DB = File('tac_database_June2022.csv');
+  var listOfDb = csvToList(DB);
   var response;
+  var insCount = 0;
   var imeis = IMEIS();
   var phones = PHONES();
   var url = Uri.https('api.telegram.org',
       'bot5592263581:AAG4ngT4rwb4iVB2VMij6P7FCNWoyjYuvio/getUpdates');
   int STOP = 1;
   int updCount = 0;
-  var ifFirst = true;
+  //var ifFirst = true;
   int updCountPrev = 0;
   try {
     while (STOP != 0) {
+      loop:
       response = await http.get(url);
       response = json.decode(response.body);
       if (response != null) {
@@ -41,25 +46,65 @@ void main() async {
           }
         }
         var lastUpd = response["result"][updCount]["message"];
-        if (updCount != updCountPrev) {
-          var inp = lastUpd["text"];
-          var message = FinderV2(imeis, phones, inp);
-          var gLink;
-          if (message ==
-              "Слишком много попыток,бро\nПоробуй еще раз, мб ошибся где...") {
-            gLink = "";
-          } else {
-            gLink = spaceDel(message);
-          }
-          var chatId = lastUpd["chat"]["id"];
-          var url = Uri.https(
-              'api.telegram.org',
-              '/bot5592263581:AAG4ngT4rwb4iVB2VMij6P7FCNWoyjYuvio/sendMessage',
-              {'chat_id': '$chatId', 'text': '$message\n\n$gLink'});
-          http.post(url);
-          updCountPrev++;
+        if (ifFirst) {
+          upd = lastUpd['message_id'].toString();
+        } else {
+          updPr = upd;
+          upd = lastUpd['message_id'].toString();
         }
 
+        if (upd != updPr) {
+          if (updCount != updCountPrev) {
+            var inp = lastUpd["text"];
+            var altInp = inp;
+            inp = Format(inp);
+
+            ////
+            if ((inp[0] == "1") ||
+                (inp[0] == "2") ||
+                (inp[0] == "3") ||
+                (inp[0] == "4") ||
+                (inp[0] == "5") ||
+                (inp[0] == "6") ||
+                (inp[0] == "7") ||
+                (inp[0] == "8") ||
+                (inp[0] == "9") ||
+                (inp[0] == "0")) {
+              var message = FinderV2(imeis, phones, inp);
+              var gLink;
+              if (message ==
+                  "Слишком много попыток,бро\nПоробуй еще раз, мб ошибся где...") {
+                gLink = "";
+              } else {
+                gLink = "https://www.google.com/search?q=" +
+                    message.replaceAll(RegExp(" "), "");
+              }
+              var chatId = lastUpd["chat"]["id"];
+              var url = Uri.https(
+                  'api.telegram.org',
+                  '/bot5592263581:AAG4ngT4rwb4iVB2VMij6P7FCNWoyjYuvio/sendMessage',
+                  {'chat_id': '$chatId', 'text': '$message\n\n$gLink'});
+              http.post(url);
+              updCountPrev++;
+            } else {
+              var gLink;
+              var message = FinderV3(imeis, phones, inp);
+              if (message ==
+                  "Слишком много попыток,бро\nПоробуй еще раз, мб ошибся где...") {
+                gLink = "";
+              } else {
+                gLink = spaceDel(message);
+              }
+              var chatId = lastUpd["chat"]["id"];
+              var url = Uri.https(
+                  'api.telegram.org',
+                  '/bot5592263581:AAG4ngT4rwb4iVB2VMij6P7FCNWoyjYuvio/sendMessage',
+                  {'chat_id': '$chatId', 'text': '$message'});
+              http.post(url);
+              updCountPrev++;
+            }
+          }
+        }
         ifFirst = false;
         //sleep(Duration(seconds: 3));
       }
@@ -70,5 +115,7 @@ void main() async {
         '/bot5592263581:AAG4ngT4rwb4iVB2VMij6P7FCNWoyjYuvio/sendMessage',
         {'chat_id': '444062880', 'text': 'ошибак $e'});
     http.post(url);
+    updCount = updCount - 1;
+    main();
   }
 }
