@@ -89,7 +89,8 @@ String FindAll(String input) {
   List<int> nums = [];
   int i = 0;
   while (i < 215206) {
-    if (phones[i].toString() == input) {
+    if (phones[i].replaceAll(RegExp(" "), "").toLowerCase() ==
+        input.replaceAll(RegExp(" "), "").toLowerCase()) {
       int a = i;
       nums.add(a);
     }

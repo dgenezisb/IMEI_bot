@@ -14,8 +14,7 @@ void main() async {
   var insCount = 0;
   var imeis = IMEIS();
   var phones = PHONES();
-  var url = Uri.https('api.telegram.org',
-      'bot5592263581:AAG4ngT4rwb4iVB2VMij6P7FCNWoyjYuvio/getUpdates');
+  var url = Uri.https('api.telegram.org', '/getUpdates');
   int STOP = 1;
   int updCount = 0;
   //var ifFirst = true;
@@ -80,9 +79,7 @@ void main() async {
                     message.replaceAll(RegExp(" "), "");
               }
               var chatId = lastUpd["chat"]["id"];
-              var url = Uri.https(
-                  'api.telegram.org',
-                  '/bot5592263581:AAG4ngT4rwb4iVB2VMij6P7FCNWoyjYuvio/sendMessage',
+              var url = Uri.https('api.telegram.org', '//sendMessage',
                   {'chat_id': '$chatId', 'text': '$message\n\n$gLink'});
               http.post(url);
               updCountPrev++;
@@ -96,13 +93,10 @@ void main() async {
                 //gLink = spaceDel(message);
               }
               var chatId = lastUpd["chat"]["id"];
-              var url = Uri.https(
-                  'api.telegram.org',
-                  '/bot5592263581:AAG4ngT4rwb4iVB2VMij6P7FCNWoyjYuvio/sendMessage',
-                  {
-                    'chat_id': '$chatId',
-                    'text': 'Список найденых по запросу IMEI\n\n$message'
-                  });
+              var url = Uri.https('api.telegram.org', '//sendMessage', {
+                'chat_id': '$chatId',
+                'text': 'Список найденых по запросу  IMEI\n\n$message'
+              });
               http.post(url);
               updCountPrev++;
             }
@@ -113,12 +107,10 @@ void main() async {
       }
     }
   } catch (e) {
-    var url = Uri.https(
-        'api.telegram.org',
-        '/bot5592263581:AAG4ngT4rwb4iVB2VMij6P7FCNWoyjYuvio/sendMessage',
+    var url = Uri.https('api.telegram.org', '//sendMessage',
         {'chat_id': '444062880', 'text': 'ошибак $e'});
     http.post(url);
-    updCount = updCount - 1;
+    //updCount = updCount - 1;
     main();
   }
 }
