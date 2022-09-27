@@ -8,8 +8,8 @@ String upd = "";
 String updPr = "";
 var ifFirst = true;
 void main() async {
-  //var DB = File('tac_database_June2022.csv');
-  //var listOfDb = csvToList(DB);
+  var DB = File('tac_database_June2022.csv');
+  var listOfDb = csvToList(DB);
   var response;
   var insCount = 0;
   var imeis = IMEIS();
@@ -88,18 +88,21 @@ void main() async {
               updCountPrev++;
             } else {
               var gLink;
-              var message = FinderV3(imeis, phones, inp);
+              var message = FindAll(altInp);
               if (message ==
                   "Слишком много попыток,бро\nПоробуй еще раз, мб ошибся где...") {
-                gLink = "";
+                //gLink = "";
               } else {
-                gLink = spaceDel(message);
+                //gLink = spaceDel(message);
               }
               var chatId = lastUpd["chat"]["id"];
               var url = Uri.https(
                   'api.telegram.org',
                   '/bot5592263581:AAG4ngT4rwb4iVB2VMij6P7FCNWoyjYuvio/sendMessage',
-                  {'chat_id': '$chatId', 'text': '$message'});
+                  {
+                    'chat_id': '$chatId',
+                    'text': 'Список найденых по запросу IMEI\n\n$message'
+                  });
               http.post(url);
               updCountPrev++;
             }

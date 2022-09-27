@@ -1,6 +1,6 @@
 import 'package:csv/csv.dart' as csv;
 import 'dart:io';
-
+import 'DataBase.dart';
 import 'package:path/path.dart';
 
 List<List> csvToList(File DB) {
@@ -78,6 +78,40 @@ String FinderV3(List<String> IMEIS, List<String> PHONES, String inside) {
     result = IMEIS[iDubl];
   }
   return result;
+}
+
+String FindAll(String input) {
+  List<String> output = [];
+  var res = "";
+  input = " " + input;
+  var imeis = IMEIS();
+  var phones = PHONES();
+  List<int> nums = [];
+  int i = 0;
+  while (i < 215206) {
+    if (phones[i].toString() == input) {
+      int a = i;
+      nums.add(a);
+    }
+    i++;
+  }
+  i = 0;
+
+  if (nums != []) {
+    while (i < nums.length) {
+      String ans = imeis.elementAt(nums.elementAt(i)) + "\n";
+      output.add(ans);
+      i++;
+    }
+  } else {
+    output.add("НИИ ЧаВо");
+  }
+
+  res = output.toString();
+  res = res.replaceAll(RegExp("\\["), "");
+  res = res.replaceAll(RegExp("]"), "");
+  res = res.replaceAll(RegExp(","), "");
+  return res;
 }
 
 String FinderV2(List<String> IMEIS, List<String> PHONES, String inside) {
