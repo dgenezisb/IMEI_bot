@@ -8,8 +8,8 @@ String upd = "";
 String updPr = "";
 var ifFirst = true;
 void main() async {
-  var DB = File('tac_database_June2022.csv');
-  var listOfDb = csvToList(DB);
+  //var DB = File('tac_database_June2022.csv');
+  //var listOfDb = csvToList(DB);
   var response;
   var insCount = 0;
   var imeis = IMEIS();
