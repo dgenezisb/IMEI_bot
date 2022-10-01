@@ -11,6 +11,7 @@ var ifFirst = true;
 List updData = [];
 int lastUpdInt = 0;
 var ifOK = false;
+int itr = 0;
 void main() async {
   //var DB = File('tac_database_June2022.csv');
   //r listOfDb = csvToList(DB);
@@ -35,9 +36,14 @@ void main() async {
       response = await http.get(url);
       response = json.decode(response.body);
       var NowTime = DateTime.now();
-      log.add("-->принял данные с апи $NowTime");
+      //log.add("-->принял данные с апи $NowTime\n\n");
       if ((response != null) && (response["result"] != null)) {
         Map result = <Map, String>{};
+        if (((response["result"].length == 0) ||
+                (response["result"].length == 1)) &&
+            ifFirst == false) {
+          ifFirst = true;
+        }
         if (ifFirst) {
           int i = 0;
           while (response["result"][i].toString() !=
@@ -46,12 +52,13 @@ void main() async {
           }
           updCount = i;
           updCountPrev = updCount - 1;
-          updData.add(response["result"][i]["update_id"].toString());
+          updData.add(response["result"].last["update_id"].toString());
           updData
-              .add(response["result"][i]["message"]["message_id"].toString());
-          updData.add(response["result"][i]["message"]["date"]);
+              .add(response["result"].last["message"]["message_id"].toString());
+          updData.add(response["result"].last["message"]["date"]);
+          itr = response["result"].length - 1;
           lastUpdInt = i;
-          log.add("-->Заполнил первую дату апдейтов $NowTime");
+          log.add("-->Заполнил первую дату апдейтов $NowTime\n\n");
         } else {
           int i = 0;
           while (response["result"][i].toString() !=
@@ -62,33 +69,37 @@ void main() async {
             updCount++;
           }
           lastUpdInt = updCount;
-          log.add("-->пока все ок...");
+          //log.add("-->пока все ок...");
         }
         //проверка по данным апдейта
         if (updData.isNotEmpty) {
-          if ((updData[0] != response["result"].last["update_id"].toString()) &&
+          if ((updData[0] !=
+                  response["result"][updCount]["update_id"].toString()) &&
               (updData[1] !=
                   response["result"]
                       .last["message"]["message_id"]
                       .toString()) &&
-              updData[2] != response["result"].last["message"]["date"]) {
-            updData[0] = response["result"].last["update_id"].toString();
-            updData[1] =
-                response["result"].last["message"]["message_id"].toString();
-            updData[2] = response["result"].last["message"]["date"];
+              updData[2] != response["result"][updCount]["message"]["date"]) {
+            updData[0] = response["result"][updCount]["update_id"].toString();
+            updData[1] = response["result"][updCount]["message"]["message_id"]
+                .toString();
+            updData[2] = response["result"][updCount]["message"]["date"];
             ifOK = true;
-            var id = response["result"].last["message_id"];
+            var id = response["result"][updCount]["message_id"];
+
             log.add(
                 "-->проверка по данным апдейта прошла успешно\n$NowTime\nupdate_id = $id");
           } else {
             ifOK = false;
             if (ifFirst) {
               ifOK = true;
+              //itr++;
             }
           }
         }
 
-        var lastUpd = response["result"][updCount]["message"];
+        //var lastUpd = response["result"][updCount]["message"];
+        var lastUpd = response["result"][itr]["message"];
         if (ifFirst) {
           upd = lastUpd['message_id'].toString();
         } else {
@@ -98,7 +109,7 @@ void main() async {
 
         if ((upd != updPr) && (ifOK == true)) {
           if (updCount != updCountPrev) {
-            log.add("-->попал в цикл обрпботки данных $NowTime");
+            log.add("-->попал в цикл обрпботки данных $NowTime\n\n");
             var inp = lastUpd["text"];
             var altInp = inp;
             inp = Format(inp);
@@ -128,26 +139,39 @@ void main() async {
                   'api.telegram.org',
                   '/bot5729343686:AAGYrJnZ-jH6gWfMgui2ip88ejCjRZftKEA/sendMessage',
                   {'chat_id': '$chatId', 'text': '$message\n\n$gLink'});
+              log.add("-->высрал ответ\n$NowTime\n\n");
               http.post(url);
               updCountPrev++;
             } else {
-              var gLink;
-              var message = FindAll(altInp);
-              if (message ==
-                  "Слишком много попыток,бро\nПоробуй еще раз, мб ошибся где...") {
-                //gLink = "";
+              if (inp == "logs") {
+                var url = Uri.https(
+                    'api.telegram.org',
+                    '/bot5729343686:AAGYrJnZ-jH6gWfMgui2ip88ejCjRZftKEA/sendMessage',
+                    {
+                      'chat_id': '444062880',
+                      'text': 'Список найденых по запросу  IMEI\n\n$log'
+                    });
+                http.post(url);
               } else {
-                //gLink = spaceDel(message);
+                var gLink;
+                var message = FindAll(altInp);
+                if (message ==
+                    "Слишком много попыток,бро\nПоробуй еще раз, мб ошибся где...") {
+                  //gLink = "";
+                } else {
+                  //gLink = spaceDel(message);
+                }
+                var chatId = lastUpd["chat"]["id"];
+                var url = Uri.https(
+                    'api.telegram.org',
+                    '/bot5729343686:AAGYrJnZ-jH6gWfMgui2ip88ejCjRZftKEA/sendMessage',
+                    {
+                      'chat_id': '$chatId',
+                      'text': 'Список найденых по запросу  IMEI\n\n$message'
+                    });
+                http.post(url);
+                log.add("-->высрал ответ\n$NowTime\n\n");
               }
-              var chatId = lastUpd["chat"]["id"];
-              var url = Uri.https(
-                  'api.telegram.org',
-                  '/bot5729343686:AAGYrJnZ-jH6gWfMgui2ip88ejCjRZftKEA/sendMessage',
-                  {
-                    'chat_id': '$chatId',
-                    'text': 'Список найденых по запросу  IMEI\n\n$message'
-                  });
-              http.post(url);
               updCountPrev++;
             }
           }
