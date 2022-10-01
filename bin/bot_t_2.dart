@@ -72,12 +72,21 @@ void main() async {
           //log.add("-->пока все ок...");
         }
         //проверка по данным апдейта
+
+        var lastUpd = response["result"][updCount]["message"];
+        //var lastUpd = response["result"][itr]["message"];
+        if (ifFirst) {
+          upd = lastUpd['message_id'].toString();
+        } else {
+          updPr = upd;
+          upd = lastUpd['message_id'].toString();
+        }
+
         if (updData.isNotEmpty) {
           if ((updData[0] !=
                   response["result"][updCount]["update_id"].toString()) &&
               (updData[1] !=
-                  response["result"]
-                      .last["message"]["message_id"]
+                  response["result"][updCount]["message"]["message_id"]
                       .toString()) &&
               updData[2] != response["result"][updCount]["message"]["date"]) {
             updData[0] = response["result"][updCount]["update_id"].toString();
@@ -86,25 +95,16 @@ void main() async {
             updData[2] = response["result"][updCount]["message"]["date"];
             ifOK = true;
             var id = response["result"][updCount]["message_id"];
-
+            itr++;
             log.add(
                 "-->проверка по данным апдейта прошла успешно\n$NowTime\nupdate_id = $id");
           } else {
             ifOK = false;
             if (ifFirst) {
               ifOK = true;
-              //itr++;
+              itr++;
             }
           }
-        }
-
-        //var lastUpd = response["result"][updCount]["message"];
-        var lastUpd = response["result"][itr]["message"];
-        if (ifFirst) {
-          upd = lastUpd['message_id'].toString();
-        } else {
-          updPr = upd;
-          upd = lastUpd['message_id'].toString();
         }
 
         if ((upd != updPr) && (ifOK == true)) {
